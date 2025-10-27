@@ -1,0 +1,28 @@
+﻿@inject DynamicPermissionSystem.Models.ApplicationDbContext Db
+@{
+    var roleId = Context.Session.GetInt32("RoleId") ?? 0;
+    var menus = Db.RoleMenuPermissions
+        .Where(r => r.RoleId == roleId && r.CanView)
+        .Select(r => r.Menu)
+        .ToList();
+}
+
+<ul class="nav flex-column mt-3">
+    @foreach (var menu in menus.Where(m => m.ParentId == null))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark fw-semibold" asp-controller="@menu.Controller" asp-action="@menu.Action">@menu.Name</a>
+            @if (menus.Any(s => s.ParentId == menu.Id))
+            {
+                <ul class="nav flex-column ms-3">
+                    @foreach (var sub in menus.Where(s => s.ParentId == menu.Id))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" asp-controller="@sub.Controller" asp-action="@sub.Action">@sub.Name</a>
+                        </li>
+                    }
+                </ul>
+            }
+        </li>
+    }
+</ul>

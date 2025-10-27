@@ -1,0 +1,35 @@
+﻿@model DynamicPermissionSystem.Models.Menu
+@{
+    ViewData["Title"] = "Create Menu";
+    var menus = ViewBag.Menus as List<DynamicPermissionSystem.Models.Menu>;
+}
+
+<h3>Create Menu</h3>
+
+<form asp-action="Create" method="post" class="mt-3">
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Controller</label>
+        <input asp-for="Controller" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Action</label>
+        <input asp-for="Action" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Parent Menu</label>
+        <select asp-for="ParentId" class="form-select">
+            <option value="">-- Root Menu --</option>
+            @foreach (var m in menus)
+            {
+                <option value="@m.Id">@m.Name</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

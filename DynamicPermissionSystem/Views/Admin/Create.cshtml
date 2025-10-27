@@ -1,0 +1,54 @@
+﻿@model DynamicPermissionSystem.Models.RoleMenuPermission
+@{
+    ViewData["Title"] = "Add Permission";
+    var roles = ViewBag.Roles as List<DynamicPermissionSystem.Models.Role> ?? new();
+    var menus = ViewBag.Menus as List<DynamicPermissionSystem.Models.Menu> ?? new();
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4 text-success fw-bold">➕ Add New Permission</h3>
+
+    <form asp-action="Create" method="post" class="border p-4 rounded shadow-sm bg-light">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Role</label>
+            <select asp-for="RoleId" class="form-select">
+                <option value="">-- Select Role --</option>
+                @foreach (var r in roles)
+                {
+                    <option value="@r.Id">@r.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Menu</label>
+            <select asp-for="MenuId" class="form-select">
+                <option value="">-- Select Menu --</option>
+                @foreach (var m in menus)
+                {
+                    <option value="@m.Id">@m.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <input asp-for="CanView" class="form-check-input me-2" type="checkbox" /> <label>Can View</label>
+            </div>
+            <div class="col">
+                <input asp-for="CanCreate" class="form-check-input me-2" type="checkbox" /> <label>Can Create</label>
+            </div>
+            <div class="col">
+                <input asp-for="CanEdit" class="form-check-input me-2" type="checkbox" /> <label>Can Edit</label>
+            </div>
+            <div class="col">
+                <input asp-for="CanDelete" class="form-check-input me-2" type="checkbox" /> <label>Can Delete</label>
+            </div>
+        </div>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-primary px-4">💾 Save</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">🔙 Back</a>
+        </div>
+    </form>
+</div>

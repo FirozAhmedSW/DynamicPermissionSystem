@@ -1,0 +1,33 @@
+﻿@model IEnumerable<DynamicPermissionSystem.Models.Menu>
+
+<h3 class="mb-3">Menu List</h3>
+
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Create New Menu</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>Name</th>
+            <th>Controller</th>
+            <th>Action</th>
+            <th>Parent Id</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.Name</td>
+                <td>@m.Controller</td>
+                <td>@m.Action</td>
+                <td>@m.ParentId</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@m.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@m.Id" class="btn btn-sm btn-info text-white">Details</a>
+                    <a asp-action="Delete" asp-route-id="@m.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

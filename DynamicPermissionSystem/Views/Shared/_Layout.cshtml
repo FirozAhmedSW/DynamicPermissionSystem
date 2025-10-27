@@ -1,0 +1,151 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject DynamicPermissionSystem.Models.ApplicationDbContext DbContext
+@{
+    var userName = Context.Session.GetString("UserName");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DynamicPermissionSystem</title>
+
+    <!-- ✅ Bootstrap & Custom CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        /* 🔹 Sidebar Styling */
+        .sidebar {
+            background-color: #0d6efd;
+            color: white;
+            min-height: 100vh;
+            width: 240px;
+            position: fixed;
+        }
+        .sidebar .nav-link {
+            color: white;
+            font-weight: 500;
+            padding: 12px 20px;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: #084298;
+            color: #fff;
+        }
+
+        /* 🔹 Content area beside sidebar */
+        .main-content {
+            margin-left: 240px;
+            padding: 2rem;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* 🔹 Navbar */
+        .navbar-custom {
+            background-color: white;
+            border-bottom: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .navbar-brand {
+            font-weight: 600;
+            color: #0d6efd !important;
+        }
+
+        /* 🔹 Footer */
+        footer {
+            background-color: #f1f1f1;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 240px;
+            width: calc(100% - 240px);
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* 🔹 Mobile Responsive */
+        @@media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                min-height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            footer {
+                left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ✅ Sidebar -->
+    <div class="sidebar d-flex flex-column p-2">
+        <h4 class="text-center mt-3 mb-4">📋 DynaPermSys</h4>
+        <nav class="nav flex-column">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                🏠 Dashboard
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "")" asp-controller="User" asp-action="Index">
+                👥 User Management
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Role" ? "active" : "")" asp-controller="Role" asp-action="Index">
+                🧩 Role Management
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Menu" ? "active" : "")" asp-controller="Menu" asp-action="Index">
+                📂 Menu Management
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="ManagePermissions">
+                🔐 Permission
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Report" ? "active" : "")" asp-controller="Report" asp-action="Index">
+                📊 Reports
+            </a>
+        </nav>
+    </div>
+
+    <!-- ✅ Main content -->
+    <div class="main-content">
+        <!-- Navbar Header -->
+        <nav class="navbar navbar-expand-sm navbar-custom mb-4">
+            <div class="container-fluid">
+                <span class="navbar-brand">Dynamic Permission System</span>
+                <div class="d-flex align-items-center">
+                    @if (!string.IsNullOrEmpty(userName))
+                    {
+                        <span class="me-3 fw-semibold text-secondary">👤 @userName</span>
+                        <a class="btn btn-outline-danger btn-sm" asp-controller="Account" asp-action="Logout">Logout</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-primary btn-sm" asp-controller="Account" asp-action="Login">Login</a>
+                    }
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Body -->
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- ✅ Footer -->
+    <footer class="border-top footer text-muted">
+        &copy; @DateTime.Now.Year - DynamicPermissionSystem
+    </footer>
+
+    <!-- ✅ Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

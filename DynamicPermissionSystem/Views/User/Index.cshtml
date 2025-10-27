@@ -1,0 +1,52 @@
+﻿@model IEnumerable<DynamicPermissionSystem.Models.User>
+
+@{
+    ViewData["Title"] = "User List";
+}
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">👥 User Management</h5>
+        <a asp-action="Create" class="btn btn-light btn-sm fw-bold">+ Add User</a>
+    </div>
+
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <table class="table table-bordered table-hover align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>User Name</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 1;
+                    }
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@u.UserName</td>
+                            <td>@u.Role?.Name</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-warning btn-sm">✏️ Edit</a>
+                                <a asp-action="Delete" asp-route-id="@u.Id" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure want to delete this user?')">🗑 Delete</a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-info text-center mb-0">
+                No users found. Click “Add User” to create one.
+            </div>
+        }
+    </div>
+</div>

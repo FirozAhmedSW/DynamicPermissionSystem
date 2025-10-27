@@ -1,0 +1,27 @@
+﻿@model DynamicPermissionSystem.Models.RoleMenuPermission
+@{
+    ViewData["Title"] = "Delete Permission";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4 text-danger fw-bold">🗑 Delete Permission</h3>
+
+    <div class="alert alert-warning">
+        Are you sure you want to delete this permission?
+    </div>
+
+    <table class="table table-bordered">
+        <tr><th>Role</th><td>@Model.Role?.Name</td></tr>
+        <tr><th>Menu</th><td>@Model.Menu?.Name</td></tr>
+        <tr><th>Can View</th><td>@(Model.CanView ? "✅" : "❌")</td></tr>
+        <tr><th>Can Create</th><td>@(Model.CanCreate ? "✅" : "❌")</td></tr>
+        <tr><th>Can Edit</th><td>@(Model.CanEdit ? "✅" : "❌")</td></tr>
+        <tr><th>Can Delete</th><td>@(Model.CanDelete ? "✅" : "❌")</td></tr>
+    </table>
+
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>

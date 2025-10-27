@@ -1,0 +1,56 @@
+﻿@model IEnumerable<DynamicPermissionSystem.Models.RoleMenuPermission>
+
+@{
+    ViewData["Title"] = "Permission List";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4 text-primary fw-bold">🔍 Role Permission List</h3>
+
+    <div class="mb-3 text-end">
+        <a asp-action="Create" class="btn btn-success">➕ Add New Permission</a>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>#</th>
+                <th>Role</th>
+                <th>Menu</th>
+                <th>View</th>
+                <th>Create</th>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="8" class="text-center text-muted">No data available.</td>
+                </tr>
+            }
+            else
+            {
+                int sl = 1;
+                foreach (var item in Model)
+                {
+                    <tr class="text-center">
+                        <td>@sl++</td>
+                        <td>@item.Role?.Name</td>
+                        <td>@item.Menu?.Name</td>
+                        <td>@(item.CanView ? "✅" : "❌")</td>
+                        <td>@(item.CanCreate ? "✅" : "❌")</td>
+                        <td>@(item.CanEdit ? "✅" : "❌")</td>
+                        <td>@(item.CanDelete ? "✅" : "❌")</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏ Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">🗑 Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
