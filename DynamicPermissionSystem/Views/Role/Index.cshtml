@@ -1,17 +1,49 @@
 ﻿@model IEnumerable<DynamicPermissionSystem.Models.Role>
+@using DynamicPermissionSystem.Models
+@inject DynamicPermissionSystem.Models.ApplicationDbContext DbContext
+
+@{
+    ViewData["Title"] = "Role Management";
+    var roleId = Context.Session.GetInt32("RoleId") ?? 0;
+
+    // 🔹 Fetch permission for "Role" controller
+    var roleMenu = DbContext.Menus.FirstOrDefault(m => m.Controller == "Role" && m.Action == "Index");
+    var perms = DbContext.RoleMenuPermissions
+        .FirstOrDefault(rp => rp.RoleId == roleId && rp.MenuId == (roleMenu.Id));
+}
+
 <h3>Role Management</h3>
-<a asp-action="Create" class="btn btn-primary mb-2">Add Role</a>
+
+@if (perms?.CanCreate == true)
+{
+    <a asp-action="Create" class="btn btn-primary mb-2">Add Role</a>
+}
+
 <table class="table table-bordered">
-    <tr><th>ID</th><th>Name</th><th>Action</th></tr>
-    @foreach (var r in Model)
-    {
+    <thead class="table-light">
         <tr>
-            <td>@r.Id</td>
-            <td>@r.Name</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@r.Id" class="btn btn-sm btn-warning">Edit</a>
-                <a asp-action="Delete" asp-route-id="@r.Id" class="btn btn-sm btn-danger">Delete</a>
-            </td>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Action</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Id</td>
+                <td>@r.Name</td>
+                <td>
+                    @if (perms?.CanEdit == true)
+                    {
+                        <a asp-action="Edit" asp-route-id="@r.Id" class="btn btn-sm btn-warning">Edit</a>
+                    }
+                    @if (perms?.CanDelete == true)
+                    {
+                        <a asp-action="Delete" asp-route-id="@r.Id" class="btn btn-sm btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
