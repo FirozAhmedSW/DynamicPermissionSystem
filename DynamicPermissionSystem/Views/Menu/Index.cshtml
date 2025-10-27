@@ -6,16 +6,18 @@
     ViewData["Title"] = "Menu List";
     var roleId = Context.Session.GetInt32("RoleId") ?? 0;
 
-    // 🔹 Fetch permissions for "Menu" controller
-    var menuPermission = DbContext.Menus
-        .FirstOrDefault(m => m.Controller == "Menu" && m.Action == "Index");
+    // 🔹 Fetch the Menu entry for the "Menu" controller
+    var menuEntry = DbContext.Menus.FirstOrDefault(m => m.Controller == "Menu" && m.Action == "Index");
 
-    var perms = DbContext.RoleMenuPermissions
-        .FirstOrDefault(rp => rp.RoleId == roleId && rp.MenuId == (menuPermission.Id));
+    // 🔹 Fetch role permissions for this menu
+    var perms = menuEntry != null
+        ? DbContext.RoleMenuPermissions.FirstOrDefault(rp => rp.RoleId == roleId && rp.MenuId == menuEntry.Id)
+        : null;
 }
 
 <h3 class="mb-3">Menu List</h3>
 
+<!-- ✅ Show Create button only if user has CanCreate permission -->
 @if (perms?.CanCreate == true)
 {
     <a asp-action="Create" class="btn btn-primary mb-3">➕ Create New Menu</a>
@@ -40,11 +42,16 @@
                 <td>@m.Action</td>
                 <td>@m.ParentId</td>
                 <td>
+                    <!-- ✅ Edit button permission -->
                     @if (perms?.CanEdit == true)
                     {
                         <a asp-action="Edit" asp-route-id="@m.Id" class="btn btn-sm btn-warning">Edit</a>
                     }
+
+                    <!-- ✅ Details button always visible -->
                     <a asp-action="Details" asp-route-id="@m.Id" class="btn btn-sm btn-info text-white">Details</a>
+
+                    <!-- ✅ Delete button permission -->
                     @if (perms?.CanDelete == true)
                     {
                         <a asp-action="Delete" asp-route-id="@m.Id" class="btn btn-sm btn-danger">Delete</a>
