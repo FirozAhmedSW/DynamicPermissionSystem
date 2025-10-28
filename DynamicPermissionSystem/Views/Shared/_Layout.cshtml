@@ -27,6 +27,12 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <style>
+        .header_text {
+            font-size: 24px;
+            color: #ffffff;
+            letter-spacing: 1px;
+            display: block;
+        }
         .sidebar {
             background-color: #0d6efd;
             color: white;
@@ -102,11 +108,11 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar d-flex flex-column p-2">
-        <h4 class="text-center mt-3 mb-4">📋 DynaPermSys</h4>
+        <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-center mb-4">
+            <span class="header_text fw-bold">📋 DynaPermSys</span>
+        </a>
         <nav class="nav flex-column">
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
-               asp-controller="Home" asp-action="Index">🏠 Dashboard</a>
-
+           
             @* Dynamically render menu items based on permissions *@
             @foreach (var menu in allowedMenus)
             {
