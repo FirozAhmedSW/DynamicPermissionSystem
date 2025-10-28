@@ -6,31 +6,29 @@
     var selectedRoleId = ViewBag.SelectedRoleId as int? ?? 0;
 }
 
-<div class="container mt-4">
+<div class=" mt-4">
     <h3 class="mb-4 text-primary fw-bold">🔐 Manage Role Permissions</h3>
 
+    <!-- ✅ Auto reload on role change -->
+<form method="get" action="/Admin/ManagePermissions" id="roleForm">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Select Role</label>
+        <select name="roleId" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+            @foreach (var r in roles)
+            {
+                <option value="@r.Id" >@r.Name</option>
+            }
+        </select>
+    </div>
+</form>
+
+
+
+
+    <!-- ✅ Permission Save Form -->
     <form method="post" asp-action="SavePermissions">
-        <!-- ✅ Role Dropdown -->
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Select Role</label>
-            <select name="roleId" class="form-select w-auto d-inline-block">
-                @foreach (var r in roles)
-                {
-                    @if (r.Id == selectedRoleId)
-                    {
-                        <option value="@r.Id" selected>@r.Name</option>
-                    }
-                    else
-                    {
-                        <option value="@r.Id">@r.Name</option>
-                    }
+        <input type="hidden" name="roleId" value="@selectedRoleId" />
 
-                }
-            </select>
-            <button type="submit" class="btn btn-secondary btn-sm ms-2" formaction="/ManagePermissions">Load</button>
-        </div>
-
-        <!-- ✅ Permissions Table -->
         <table class="table table-bordered align-middle">
             <thead class="table-light text-center">
                 <tr>
