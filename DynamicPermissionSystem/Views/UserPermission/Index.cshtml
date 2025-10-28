@@ -10,13 +10,19 @@
 <h3>👤 Assign Menu Permissions to User</h3>
 
 <form method="get" asp-action="Index" class="mb-3">
-    <label>Select User:</label>
-    <select name="userId" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
-        @foreach(var u in users)
+    <select name="userId" class="form-select" onchange="this.form.submit()">
+        @foreach (var u in ViewBag.users)
         {
-            <option value="@u.Id">@u.UserName</option>
+            if (u.Id == ViewBag.SelectedUser)
+            {
+               <option value="@u.Id" selected> @u.UserName </option>
+            }
+            else
+            {
+               <option value="@u.Id"> @u.UserName</option>
+            }
         }
-    </select>
+        </select>
 </form>
 
 <form method="post" asp-action="Save">

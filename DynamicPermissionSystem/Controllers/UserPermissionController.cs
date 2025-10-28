@@ -30,6 +30,7 @@ namespace DynamicPermissionSystem.Controllers
             ViewBag.SelectedUserId = selectedUserId;
             ViewBag.Menus = menus;
             ViewBag.Perms = perms;
+            ViewBag.SelectedUser = userId;
 
             return View();
         }

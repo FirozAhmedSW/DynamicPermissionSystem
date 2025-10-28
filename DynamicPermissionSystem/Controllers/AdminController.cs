@@ -12,49 +12,66 @@ namespace DynamicPermissionSystem.Controllers
             _db = db;
         }
 
-        public IActionResult ManagePermissions(int? roleId)
+        public IActionResult ManagePermissions(int? userId)
         {
-            // 🔐 শুধুমাত্র Admin role access করতে পারবে
+            // 🔐 শুধু Admin ই access করতে পারবে
             var myRoleId = HttpContext.Session.GetInt32("RoleId") ?? 0;
             var currentRole = _db.Roles.Find(myRoleId);
             if (currentRole == null || currentRole.Name != "Admin")
                 return Forbid();
 
-            // 🔹 সব Roles আনছি dropdown এর জন্য
-            var roles = _db.Roles.ToList();
-            if (!roles.Any())
-                return View(); // যদি কোনো role না থাকে
+            // 🔹 সব Users আনছি dropdown এর জন্য
+            var users = _db.Users.Include(u => u.Role).ToList();
+            if (!users.Any())
+                return View(); // যদি কোনো user না থাকে
 
-            // 🔹 যদি roleId null হয় তাহলে প্রথম role ধরে নিচ্ছি
-            var selectedRoleId = roleId ?? roles.First().Id;
+            // 🔹 যদি userId null হয় তাহলে প্রথম user ধরে নিচ্ছি
+            var selectedUserId = userId ?? users.First().Id;
 
-            // 🔹 Menus এবং Permissions আনছি
-            var menus = _db.Menus
-                .OrderBy(m => m.ParentId)
-                .ThenBy(m => m.Name)
-                .ToList();
+            // 🔹 User-এর Role বের করছি
+            var user = _db.Users.Include(u => u.Role).FirstOrDefault(u => u.Id == selectedUserId);
+            if (user == null)
+                return View();
 
+            // 🔹 Role অনুযায়ী Permissions আনছি
+            var menus = _db.Menus.OrderBy(m => m.ParentId).ThenBy(m => m.Name).ToList();
             var perms = _db.RoleMenuPermissions
-                .Where(p => p.RoleId == selectedRoleId)
+                .Where(p => p.RoleId == user.RoleId)
                 .ToList();
 
             // 🔹 ViewBag এ পাঠানো
-            ViewBag.Roles = roles;
+            ViewBag.Users = users;
             ViewBag.Menus = menus;
             ViewBag.Perms = perms;
-            ViewBag.SelectedRoleId = selectedRoleId;
+            ViewBag.SelectedUserId = selectedUserId;
+            ViewBag.SelectedUserRole = user.Role?.Name ?? "Unknown";
+            ViewBag.SelectedUser = userId;
 
             return View();
         }
 
 
+
         [HttpPost]
-        public IActionResult SavePermissions(int roleId, List<string> flags)
+        public IActionResult SavePermissions(int userId, List<string> flags)
         {
-            flags = flags ?? new List<string>(); // avoid null
+            flags = flags ?? new List<string>(); // Null check
+
+            // 🔹 User থেকে তার Role বের করি
+            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                TempData["Error"] = "Invalid User!";
+                return RedirectToAction("ManagePermissions");
+            }
+
+            int roleId = user.RoleId;
+
+            // 🔹 পুরনো permission গুলো মুছে ফেলি
             var existing = _db.RoleMenuPermissions.Where(r => r.RoleId == roleId).ToList();
             _db.RoleMenuPermissions.RemoveRange(existing);
 
+            // 🔹 নতুন permission গুলো যোগ করি
             foreach (var m in _db.Menus.ToList())
             {
                 _db.RoleMenuPermissions.Add(new RoleMenuPermission
@@ -69,8 +86,11 @@ namespace DynamicPermissionSystem.Controllers
             }
 
             _db.SaveChanges();
-            return RedirectToAction("ManagePermissions", new { roleId });
+
+            TempData["Success"] = "✅ Permissions saved successfully!";
+            return RedirectToAction("ManagePermissions", new { userId });
         }
+
 
 
 

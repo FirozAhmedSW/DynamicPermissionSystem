@@ -1,42 +1,64 @@
-﻿@using DynamicPermissionSystem.Models
+﻿
+
+
+@using DynamicPermissionSystem.Models
 @{
-    var roles = ViewBag.Roles as List<Role> ?? new List<Role>();
+    var users = ViewBag.Users as List<User> ?? new List<User>();
     var menus = ViewBag.Menus as List<Menu> ?? new List<Menu>();
     var perms = ViewBag.Perms as List<RoleMenuPermission> ?? new List<RoleMenuPermission>();
-    var selectedRoleId = ViewBag.SelectedRoleId as int? ?? 0;
+    var selectedUserId = ViewBag.SelectedUserId as int? ?? 0;
+    var selectedUserRole = ViewBag.SelectedUserRole as string ?? "";
 }
 
-<div class=" mt-4">
-    <h3 class="mb-4 text-primary fw-bold">🔐 Manage Role Permissions</h3>
+<div class="mt-4">
+    <h3 class="mb-4 text-primary fw-bold">👤 Manage User Permissions</h3>
 
-    <!-- ✅ Auto reload on role change -->
-<form method="get" action="/Admin/ManagePermissions" id="roleForm">
-    <div class="mb-3">
-        <label class="form-label fw-semibold">Select Role</label>
-        <select name="roleId" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
-            @foreach (var r in roles)
-            {
-                <option value="@r.Id" >@r.Name</option>
-            }
-        </select>
-    </div>
-</form>
+    <!-- ✅ User Select -->
+    <form method="get" action="/Admin/ManagePermissions" id="userForm">
+        <div class="row mb-3 align-items-center">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Select User</label>
+                <select name="userId" class="form-select" onchange="this.form.submit()">
+                    @foreach (var u in ViewBag.users)
+                    {
+                        if(u.Id == ViewBag.SelectedUser){
 
+                            <option value="@u.Id" selected> @u.UserName</option>
+                        }else{
+                            <option value="@u.Id"> @u.UserName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">User Role</label>
+                <input type="text" class="form-control" value="@selectedUserRole" readonly />
+            </div>
+            <div class="col-md-4">
+            
+            </div>
+        </div>
+    </form>
 
-
-
-    <!-- ✅ Permission Save Form -->
     <form method="post" asp-action="SavePermissions">
-        <input type="hidden" name="roleId" value="@selectedRoleId" />
+        <input type="hidden" name="userId" value="@selectedUserId" />
 
-        <table class="table table-bordered align-middle">
-            <thead class="table-light text-center">
+        <table class="table table-bordered align-middle shadow-sm">
+            <thead class="table-primary text-center">
                 <tr>
                     <th>Menu</th>
-                    <th>View</th>
-                    <th>Create</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
+                    <th>
+                        <input type="checkbox" id="checkAllView" /> View
+                    </th>
+                    <th>
+                        <input type="checkbox" id="checkAllCreate" /> Create
+                    </th>
+                    <th>
+                        <input type="checkbox" id="checkAllEdit" /> Edit
+                    </th>
+                    <th>
+                        <input type="checkbox" id="checkAllDelete" /> Delete
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -46,16 +68,16 @@
                     <tr>
                         <td>@m.Name</td>
                         <td class="text-center">
-                            <input type="checkbox" name="flags" value="view_@m.Id" @(row?.CanView == true ? "checked" : "") />
+                            <input type="checkbox" class="chk-view" name="flags" value="view_@m.Id" @(row?.CanView == true ? "checked" : "") />
                         </td>
                         <td class="text-center">
-                            <input type="checkbox" name="flags" value="create_@m.Id" @(row?.CanCreate == true ? "checked" : "") />
+                            <input type="checkbox" class="chk-create" name="flags" value="create_@m.Id" @(row?.CanCreate == true ? "checked" : "") />
                         </td>
                         <td class="text-center">
-                            <input type="checkbox" name="flags" value="edit_@m.Id" @(row?.CanEdit == true ? "checked" : "") />
+                            <input type="checkbox" class="chk-edit" name="flags" value="edit_@m.Id" @(row?.CanEdit == true ? "checked" : "") />
                         </td>
                         <td class="text-center">
-                            <input type="checkbox" name="flags" value="delete_@m.Id" @(row?.CanDelete == true ? "checked" : "") />
+                            <input type="checkbox" class="chk-delete" name="flags" value="delete_@m.Id" @(row?.CanDelete == true ? "checked" : "") />
                         </td>
                     </tr>
                 }
@@ -66,4 +88,40 @@
             <button type="submit" class="btn btn-primary px-4">💾 Save Permissions</button>
         </div>
     </form>
+
+
 </div>
+
+<script>
+    // View column
+    document.getElementById("checkAllView").addEventListener("change", function () {
+        document.querySelectorAll(".chk-view").forEach(cb => cb.checked = this.checked);
+    });
+
+    // Create column
+    document.getElementById("checkAllCreate").addEventListener("change", function () {
+        document.querySelectorAll(".chk-create").forEach(cb => cb.checked = this.checked);
+    });
+
+    // Edit column
+    document.getElementById("checkAllEdit").addEventListener("change", function () {
+        document.querySelectorAll(".chk-edit").forEach(cb => cb.checked = this.checked);
+    });
+
+    // Delete column
+    document.getElementById("checkAllDelete").addEventListener("change", function () {
+        document.querySelectorAll(".chk-delete").forEach(cb => cb.checked = this.checked);
+    });
+</script>
+
+<style>
+    .table {
+        background-color: #fff;
+        border-radius: 8px;
+    }
+
+    .form-select, .form-control {
+        border-radius: 8px;
+    }
+</style>
+
