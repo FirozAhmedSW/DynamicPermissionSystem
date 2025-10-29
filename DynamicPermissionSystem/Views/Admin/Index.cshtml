@@ -1,20 +1,39 @@
 ﻿@model IEnumerable<DynamicPermissionSystem.Models.RoleMenuPermission>
+@using DynamicPermissionSystem.Models
+@inject DynamicPermissionSystem.Models.ApplicationDbContext DbContext
 
 @{
     ViewData["Title"] = "Permission List";
+    var roleId = Context.Session.GetInt32("RoleId") ?? 0;
+
+    // 🔹 Fetch the Menu entry for the "Menu" controller
+    var menuEntry = DbContext.Menus.FirstOrDefault(m => m.Controller == "Admin" && m.Action == "Index");
+
+    // 🔹 Fetch role permissions for this menu
+    var perms = menuEntry != null ? DbContext.RoleMenuPermissions.FirstOrDefault(rp => rp.RoleId == roleId && rp.MenuId == menuEntry.Id) : null;
 }
 
-<div class="container mt-4">
-    <h3 class="mb-4 text-primary fw-bold">🔍 Role Permission List</h3>
 
-    <div class="mb-3 text-end">
-        <a asp-action="Create" class="btn btn-success">➕ Add New Permission</a>
+
+<div class="mt-4">
+
+    <div class="row">
+        <div class="col-md-6 text-start">
+            <h3 class="mb-4 text-primary fw-bold">🔍 Role Permission List</h3>
+        </div>
+        <div class="col-md-6 text-end">
+            @if (perms?.CanCreate == true)
+            {
+                <a asp-action="Create" class="btn btn-success">➕ Add New Permission</a>
+            }
+        </div>
+
     </div>
 
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark text-center">
             <tr>
-                <th>#</th>
+                <th>SL NO</th>
                 <th>Role</th>
                 <th>Menu</th>
                 <th>View</th>
@@ -37,7 +56,7 @@
                 foreach (var item in Model)
                 {
                     <tr class="text-center">
-                        <td>@sl++</td>
+                        <td>@(sl++)</td>
                         <td>@item.Role?.Name</td>
                         <td>@item.Menu?.Name</td>
                         <td>@(item.CanView ? "✅" : "❌")</td>
@@ -45,12 +64,19 @@
                         <td>@(item.CanEdit ? "✅" : "❌")</td>
                         <td>@(item.CanDelete ? "✅" : "❌")</td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏ Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">🗑 Delete</a>
+                            @if (perms?.CanEdit == true)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏ Edit</a>
+                            }
+                            @if (perms?.CanDelete == true)
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">🗑 Delete</a>
+                            }
                         </td>
                     </tr>
                 }
             }
+
         </tbody>
     </table>
 </div>

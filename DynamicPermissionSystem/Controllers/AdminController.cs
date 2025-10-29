@@ -18,7 +18,7 @@ namespace DynamicPermissionSystem.Controllers
             var myRoleId = HttpContext.Session.GetInt32("RoleId") ?? 0;
             var currentRole = _db.Roles.Find(myRoleId);
             if (currentRole == null || currentRole.Name != "Admin")
-                return Forbid();
+                return RedirectToAction("Index");
 
             // 🔹 সব Users আনছি dropdown এর জন্য
             var users = _db.Users.Include(u => u.Role).ToList();
@@ -35,9 +35,7 @@ namespace DynamicPermissionSystem.Controllers
 
             // 🔹 Role অনুযায়ী Permissions আনছি
             var menus = _db.Menus.OrderBy(m => m.ParentId).ThenBy(m => m.Name).ToList();
-            var perms = _db.RoleMenuPermissions
-                .Where(p => p.RoleId == user.RoleId)
-                .ToList();
+            var perms = _db.RoleMenuPermissions.Where(p => p.RoleId == user.RoleId).ToList();
 
             // 🔹 ViewBag এ পাঠানো
             ViewBag.Users = users;
@@ -99,10 +97,7 @@ namespace DynamicPermissionSystem.Controllers
         // 🔹 List all RoleMenuPermissions
         public IActionResult Index()
         {
-            var data = _db.RoleMenuPermissions
-                .Include(r => r.Role)
-                .Include(m => m.Menu)
-                .ToList();
+            var data = _db.RoleMenuPermissions.Include(r => r.Role).Include(m => m.Menu).ToList();
             return View(data);
         }
 

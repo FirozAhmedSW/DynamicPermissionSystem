@@ -10,9 +10,7 @@
     var menuEntry = DbContext.Menus.FirstOrDefault(m => m.Controller == "Menu" && m.Action == "Index");
 
     // 🔹 Fetch role permissions for this menu
-    var perms = menuEntry != null
-        ? DbContext.RoleMenuPermissions.FirstOrDefault(rp => rp.RoleId == roleId && rp.MenuId == menuEntry.Id)
-        : null;
+    var perms = menuEntry != null ? DbContext.RoleMenuPermissions.FirstOrDefault(rp => rp.RoleId == roleId && rp.MenuId == menuEntry.Id) : null;
 }
 
 <h3 class="mb-3">Menu List</h3>
