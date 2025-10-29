@@ -9,11 +9,11 @@
 
     // 🔹 Fetch allowed menus based on role permission
     var allowedMenus = DbContext.RoleMenuPermissions
-        .Where(rp => rp.RoleId == roleId && rp.CanView)
-        .Include(rp => rp.Menu)
-        .Select(rp => rp.Menu)
-        .Distinct()
-        .ToList();
+                                .Where(rp => rp.RoleId == roleId && rp.CanView)
+                                .Include(rp => rp.Menu)
+                                .Select(rp => rp.Menu)
+                                .Distinct()
+                                .ToList();
 }
 
 <!DOCTYPE html>
@@ -24,47 +24,70 @@
     <title>@ViewData["Title"] - DynamicPermissionSystem</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
+        /* Header text */
         .header_text {
             font-size: 24px;
             color: #ffffff;
             letter-spacing: 1px;
             display: block;
         }
+
+        /* Sidebar */
         .sidebar {
             background-color: #0d6efd;
             color: white;
             min-height: 100vh;
             width: 240px;
             position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            overflow-y: auto;
+            padding-top: 1rem;
         }
 
             .sidebar .nav-link {
                 color: white;
                 font-weight: 500;
-                padding: 12px 20px;
-                transition: background-color 0.2s ease;
+                padding: 10px 20px;
+                border-radius: 0.5rem;
+                margin-bottom: 5px;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
 
-                .sidebar .nav-link:hover,
+                .sidebar .nav-link:hover {
+                    background-color: rgba(255, 255, 255, 0.15);
+                    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+                }
+
                 .sidebar .nav-link.active {
                     background-color: #084298;
                     color: #fff;
+                    font-weight: 600;
                 }
 
+        /* Main content */
         .main-content {
             margin-left: 240px;
-            /* padding: 2rem; */
             background-color: #f8f9fa;
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
-        .mainContent{
-            padding-left: 20px;
+        .mainContent {
+            padding: 20px;
         }
 
+        /* Navbar */
         .navbar-custom {
             background-color: white;
             border-bottom: 1px solid #dee2e6;
@@ -76,6 +99,7 @@
             color: #0d6efd !important;
         }
 
+        /* Footer */
         footer {
             background-color: #f1f1f1;
             padding: 10px;
@@ -85,23 +109,63 @@
             width: calc(100% - 240px);
             text-align: center;
             font-size: 14px;
+            transition: left 0.3s ease, width 0.3s ease;
+        }
+
+        /* Responsive */
+        @@media (max-width: 992px) {
+            .sidebar
+
+        {
+            width: 200px;
+        }
+
+        .main-content {
+            margin-left: 200px;
+        }
+
+        footer {
+            left: 200px;
+            width: calc(100% - 200px);
+        }
+
         }
 
         @@media (max-width: 768px) {
-            .sidebar {
-                position: relative;
-                width: 100%;
-                min-height: auto;
-            }
+            .sidebar
 
-            .main-content {
-                margin-left: 0;
-            }
+        {
+            position: relative;
+            width: 100%;
+            min-height: auto;
+        }
 
-            footer {
-                left: 0;
-                width: 100%;
-            }
+        .main-content {
+            margin-left: 0;
+        }
+
+        footer {
+            left: 0;
+            width: 100%;
+        }
+
+        }
+
+        @@media (max-width: 576px) {
+            .header_text
+
+        {
+            font-size: 20px;
+        }
+
+        .mainContent {
+            padding: 10px;
+        }
+
+        .navbar-brand {
+            font-size: 16px;
+        }
+
         }
     </style>
 </head>
@@ -111,23 +175,23 @@
         <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-center mb-4">
             <span class="header_text fw-bold">📋 DynaPermSys</span>
         </a>
-        <nav class="nav flex-column">
-           
-            @* Dynamically render menu items based on permissions *@
+        <nav class="nav flex-column nav-pills">
             @foreach (var menu in allowedMenus)
             {
                 <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == menu.Controller ? "active" : "")"
                    asp-controller="@menu.Controller" asp-action="@menu.Action">
-                    @menu.Name
+                    <i class="bi bi-folder"></i> @menu.Name
                 </a>
             }
 
-            @* Admin-only permission management link *@
-            @if (roleId == 1)
+            @* Admin-only link example *@
+            @*if (roleId == 1)
             {
                 <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")"
-                   asp-controller="Admin" asp-action="ManagePermissions">🔐 Permission</a>
-            }
+                   asp-controller="Admin" asp-action="ManagePermissions">
+                    <i class="bi bi-shield-lock"></i> Permission
+                </a>
+            }*@
         </nav>
     </div>
 
@@ -150,8 +214,7 @@
             </div>
         </nav>
 
-
-        <main role="main" class="mainContent pb-3">
+        <main role="main" class="mainContent">
             @RenderBody()
         </main>
     </div>
