@@ -2,7 +2,7 @@
     ViewData["Title"] = "Reports";
 }
 
-<div class="container mt-4">
+<div class="mt-4">
     <h3>📊 Reports Section</h3>
 
     <div class="alert alert-info mt-3">
@@ -11,28 +11,5 @@
 
     <p>Coming soon...</p>
 
-    Optional: if you fetch report data from controller
-    
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Report Name</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach(var r in Model)
-        {
-            <tr>
-                <td>@r.Id</td>
-                <td>@r.Name</td>
-                <td>@r.Date.ToShortDateString()</td>
-                <td>@r.Status</td>
-            </tr>
-        }
-        </tbody>
-    </table>
    
 </div>

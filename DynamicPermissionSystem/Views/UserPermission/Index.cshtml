@@ -5,47 +5,99 @@
     var selectedUserId = ViewBag.SelectedUserId as int? ?? 0;
     var menus = ViewBag.Menus as List<Menu>;
     var perms = ViewBag.Perms as List<RoleMenuPermission>;
+    var selectedUserRole = ViewBag.SelectedUserRole as string ?? "N/A";
 }
 
-<h3>👤 Assign Menu Permissions to User</h3>
+<div class="">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">👤 Assign Menu Permissions to User</h4>
+        </div>
 
-<form method="get" asp-action="Index" class="mb-3">
-    <select name="userId" class="form-select" onchange="this.form.submit()">
-        @foreach (var u in ViewBag.users)
-        {
-            if (u.Id == ViewBag.SelectedUser)
-            {
-               <option value="@u.Id" selected> @u.UserName </option>
-            }
-            else
-            {
-               <option value="@u.Id"> @u.UserName</option>
-            }
+        <div class="card-body">
+            <div class="row mb-4">
+                <!-- 🔹 User Dropdown (Unchanged as requested) -->
+                <div class="col-md-6">
+                    <form method="get" asp-action="Index" class="mb-3">
+                        <label class="form-label fw-semibold">Select User</label>
+                        <select name="userId" class="form-select shadow-sm" onchange="this.form.submit()">
+                            @foreach (var u in ViewBag.users)
+                            {
+                                if (u.Id == ViewBag.SelectedUser)
+                                {
+                                    <option value="@u.Id" selected>@u.UserName</option>
+                                }
+                                else
+                                {
+                                    <option value="@u.Id">@u.UserName</option>
+                                }
+                            }
+                        </select>
+                    </form>
+                </div>
+
+                <!-- 🔹 Role Display -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">User Role</label>
+                    <input type="text"
+                           class="form-control bg-light border-0 shadow-sm fw-semibold text-primary"
+                           value="@selectedUserRole"
+                           readonly />
+                </div>
+            </div>
+
+            <!-- 🔹 Permission Table -->
+            <form method="post" asp-action="Save">
+                <input type="hidden" name="userId" value="@selectedUserId" />
+
+                <table class="table table-bordered align-middle shadow-sm table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th style="width:70%;">Menu Name</th>
+                            <th class="text-center" style="width:30%;">Can View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var menu in menus)
+                        {
+                            var hasPerm = perms.Any(p => p.MenuId == menu.Id);
+                            <tr>
+                                <td>@menu.Name</td>
+                                <td class="text-center">
+                                    <input type="checkbox" name="menuIds" value="@menu.Id" @(hasPerm ? "checked" : "") />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-success px-4 shadow">
+                        💾 Save Permissions
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Optional extra CSS -->
+<style>
+    .form-select, .form-control {
+        border-radius: 10px;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .form-select:focus, .form-control:focus {
+            box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
+            border-color: #0d6efd;
         }
-        </select>
-</form>
 
-<form method="post" asp-action="Save">
-    <input type="hidden" name="userId" value="@selectedUserId" />
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>Menu Name</th>
-                <th>View</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var menu in menus)
-            {
-                var hasPerm = perms.Any(p => p.MenuId == menu.Id);
-                <tr>
-                    <td>@menu.Name</td>
-                    <td class="text-center">
-                        <input type="checkbox" name="menuIds" value="@menu.Id" @(hasPerm ? "checked" : "") />
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <button type="submit" class="btn btn-primary">💾 Save Permissions</button>
-</form>
+    .table-hover tbody tr:hover {
+        background-color: #f6f9ff;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+</style>

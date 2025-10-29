@@ -15,25 +15,45 @@ namespace DynamicPermissionSystem.Controllers
         // GET: User-wise menu permissions
         public IActionResult Index(int? userId)
         {
+            // 🔹 সব Users আনছি dropdown এর জন্য
             var users = _db.Users.Include(u => u.Role).ToList();
-            var selectedUserId = userId ?? users.FirstOrDefault()?.Id ?? 0;
 
-            var selectedUser = _db.Users.Find(selectedUserId);
-            var roleId = selectedUser?.RoleId ?? 0;
+            if (!users.Any())
+                return View(); // যদি কোনো user না থাকে, blank view দেখাবে
 
-            var menus = _db.Menus.ToList();
+            // 🔹 যদি userId null হয় তাহলে প্রথম user ধরে নিচ্ছি
+            var selectedUserId = userId ?? users.First().Id;
+
+            // 🔹 User ও তার Role বের করছি
+            var selectedUser = _db.Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u => u.Id == selectedUserId);
+
+            if (selectedUser == null)
+                return View();
+
+            var roleId = selectedUser.RoleId;
+            var selectedUserRole = selectedUser.Role?.Name ?? "N/A";
+
+
+            // 🔹 Role অনুযায়ী permissions আনছি
+            var menus = _db.Menus.OrderBy(m => m.ParentId).ThenBy(m => m.Name).ToList();
+
             var perms = _db.RoleMenuPermissions
-                .Where(rp => rp.RoleId == roleId)
+                .Where(p => p.RoleId == roleId)
                 .ToList();
 
+            // 🔹 ViewBag এ পাঠাচ্ছি
             ViewBag.Users = users;
             ViewBag.SelectedUserId = selectedUserId;
             ViewBag.Menus = menus;
             ViewBag.Perms = perms;
-            ViewBag.SelectedUser = userId;
+            ViewBag.SelectedUserRole = selectedUserRole;
 
             return View();
         }
+
+
 
         // POST: Save permissions for selected user
         [HttpPost]
