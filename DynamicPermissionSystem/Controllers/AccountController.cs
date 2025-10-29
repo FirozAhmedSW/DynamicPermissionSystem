@@ -26,11 +26,11 @@ namespace DynamicPermissionSystem.Controllers
             var user = await _db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserName == username && u.Password == password);
             if (user == null) { ViewBag.Error = "Invalid credentials"; return View(); }
 
-            if (username == "admin" && password == "123")
-            {
-                var token = _tokenService.GenerateToken(username, "Admin");
-                return Json(new { Token = token });
-            }
+            //if (username == "admin" && password == "123")
+            //{
+            //    var token = _tokenService.GenerateToken(username, "Admin");
+            //    return Json(new { Token = token });
+            //}
 
             //json formate a user data ke session a rakha hossa
             var userJson = System.Text.Json.JsonSerializer.Serialize(user);
