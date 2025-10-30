@@ -25,9 +25,7 @@ namespace DynamicPermissionSystem.Controllers
             var selectedUserId = userId ?? users.First().Id;
 
             // 🔹 User ও তার Role বের করছি
-            var selectedUser = _db.Users
-                .Include(u => u.Role)
-                .FirstOrDefault(u => u.Id == selectedUserId);
+            var selectedUser = _db.Users.Include(u => u.Role).FirstOrDefault(u => u.Id == selectedUserId);
 
             if (selectedUser == null)
                 return View();
@@ -35,13 +33,10 @@ namespace DynamicPermissionSystem.Controllers
             var roleId = selectedUser.RoleId;
             var selectedUserRole = selectedUser.Role?.Name ?? "N/A";
 
-
             // 🔹 Role অনুযায়ী permissions আনছি
             var menus = _db.Menus.OrderBy(m => m.ParentId).ThenBy(m => m.Name).ToList();
 
-            var perms = _db.RoleMenuPermissions
-                .Where(p => p.RoleId == roleId)
-                .ToList();
+            var perms = _db.RoleMenuPermissions.Where(p => p.RoleId == roleId).ToList();
 
             // 🔹 ViewBag এ পাঠাচ্ছি
             ViewBag.Users = users;
