@@ -8,12 +8,7 @@
     var roleId = Context.Session.GetInt32("RoleId") ?? 0;
 
     // 🔹 Fetch allowed menus based on role permission
-    var allowedMenus = DbContext.RoleMenuPermissions
-                                .Where(rp => rp.RoleId == roleId && rp.CanView)
-                                .Include(rp => rp.Menu)
-                                .Select(rp => rp.Menu)
-                                .Distinct()
-                                .ToList();
+    var allowedMenus = DbContext.RoleMenuPermissions.Where(rp => rp.RoleId == roleId && rp.CanView).Include(rp => rp.Menu).Select(rp => rp.Menu).Distinct().ToList();
 }
 
 <!DOCTYPE html>
@@ -22,7 +17,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DynamicPermissionSystem</title>
-
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -183,15 +177,6 @@
                     <i class="bi bi-folder"></i> @menu.Name
                 </a>
             }
-
-            @* Admin-only link example *@
-            @*if (roleId == 1)
-            {
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")"
-                   asp-controller="Admin" asp-action="ManagePermissions">
-                    <i class="bi bi-shield-lock"></i> Permission
-                </a>
-            }*@
         </nav>
     </div>
 

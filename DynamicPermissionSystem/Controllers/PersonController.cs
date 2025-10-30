@@ -12,6 +12,10 @@ namespace DynamicPermissionSystem.Controllers
 
         public IActionResult Index()
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
             if (!PermissionHelper.HasPermission(HttpContext, _db, "Person", "Index"))
                 return Forbid();
 

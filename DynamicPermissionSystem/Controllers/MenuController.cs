@@ -38,6 +38,10 @@ namespace DynamicPermissionSystem.Controllers
         // ✅ List all menus
         public IActionResult Index()
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
             if (!HasPermission("View"))
                 return RedirectToAction("AccessDenied", "Auth");
 

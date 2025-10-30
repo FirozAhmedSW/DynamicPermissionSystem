@@ -4,14 +4,9 @@
     var roleId = Context.Session.GetInt32("RoleId") ?? 0;
 
     // ✅ Include Menu to avoid null
-    var permissions = Db.RoleMenuPermissions
-                        .Include(rp => rp.Menu)
-                        .Where(rp => rp.RoleId == roleId && rp.CanView)
-                        .ToList();
-
+    var permissions = Db.RoleMenuPermissions.Include(rp => rp.Menu).Where(rp => rp.RoleId == roleId && rp.CanView).ToList();
     // ✅ Flatten menu list
     var menus = permissions.Select(rp => rp.Menu).ToList();
-
     // ✅ Group submenus
     var menuGroups = menus.GroupBy(m => m.ParentId).ToDictionary(g => g.Key, g => g.ToList());
 }

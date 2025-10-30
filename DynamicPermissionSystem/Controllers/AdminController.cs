@@ -97,6 +97,10 @@ namespace DynamicPermissionSystem.Controllers
         // 🔹 List all RoleMenuPermissions
         public IActionResult Index()
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
             var data = _db.RoleMenuPermissions.Include(r => r.Role).Include(m => m.Menu).ToList();
             return View(data);
         }

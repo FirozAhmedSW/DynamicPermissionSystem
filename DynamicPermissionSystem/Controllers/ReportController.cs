@@ -17,6 +17,9 @@ namespace DynamicPermissionSystem.Controllers
 
         public IActionResult Index()
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
             // 🔹 Get role from session
             var roleId = HttpContext.Session.GetInt32("RoleId") ?? 0;
 

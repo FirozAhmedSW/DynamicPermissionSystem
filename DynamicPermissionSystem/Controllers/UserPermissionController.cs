@@ -15,6 +15,10 @@ namespace DynamicPermissionSystem.Controllers
         // GET: User-wise menu permissions
         public IActionResult Index(int? userId)
         {
+
+            var UserID = HttpContext.Session.GetInt32("UserId");
+            if (UserID == null)
+                return RedirectToAction("Login", "Account");
             // 🔹 সব Users আনছি dropdown এর জন্য
             var users = _db.Users.Include(u => u.Role).ToList();
 
